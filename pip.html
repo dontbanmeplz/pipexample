@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/destyle.css@1.0.15/destyle.css"
+  />
+  <style> 
+    @import url('https://fonts.googleapis.com/css2?family=Audiowide:wght@400&display=swap');
+    html {
+      background: #31313f;
+    }
+    html, body {
+      height: 100%;
+      font-size: 30px;
+      font-family: 'Audiowide', sans-serif;
+      color: #f89ca0;
+    }
+    .text-container {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 30px;
+    }
+    .text {
+      float: center;
+      display: flex;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="text-container">
+    <div id="Day" class="text"></div>
+    <div id="Time" class="text"></div>
+    <div id="Pin" class="text"></div>
+    <div id="RAM" class="text"></div>
+  </div>
+
+  <script>
+    setInterval(async function () {
+      document.getElementById("Day").textContent = getDayOfWeek() + " " + getCurrentDate();
+      document.getElementById("Time").textContent = getCurrentTime();
+      document.getElementById("RAM").textContent = parseInt((await system.memoryStatus()).freeMemoryInMB) + " MB";
+      document.getElementById("Pin").textContent = parseInt(await system.batteryLevel()) + "%";
+    }, 1000);
+
+    async function tapDetect() {
+      if (document.body.style.backgroundColor == "pink") {
+        // document.body.style.backgroundColor = "blue";
+      } else {
+        // document.body.style.backgroundColor = "red";
+      }
+      return false
+    }
+
+    function getCurrentDate() {
+      const today = new Date();
+      const dd = String(today.getDate()).padStart(2, '0');
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const yyyy = today.getFullYear();
+      return dd + '/' + mm + '/' + yyyy;
+    }
+
+    function getCurrentTime() {
+      let time = new Date();
+      let sec = time.getSeconds();
+      let min = time.getMinutes();
+      let hr = time.getHours();
+     let day = 'AM';
+      if (hr > 12) {
+        day = 'PM';
+        hr = hr - 12;
+      }
+      if (hr == 0) {
+        hr = 12;
+      }
+      if (sec < 10) {
+        sec = '0' + sec;
+      }
+      if (min < 10) {
+        min = '0' + min;
+      }
+      if (hr < 10) {
+        hr = '0' + hr;
+      }
+
+      return hr + ':' + min + ':' + sec + ' ' + day;
+    }
+
+    function getDayOfWeek() {
+      const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const today = new Date();
+      const dayOfWeek = today.getDay();
+      return days[dayOfWeek];
+    }
+
+function StartScroll(target_id){
+    const ele = document.getElementById(target_id);
+    var style = ele.style;
+    style.overflowY = "scroll";
+    style.whiteSpace = "nowrap";
+    style.setProperty("-ms-overflow-style","none");
+    style.setProperty("scrollbar-width","none");
+    style.setProperty("-webkit-scrollbar","none");
+
+    let scroll_exit = "no";
+
+    function scroll(){
+        if(scroll_exit == "no"){
+            if(!ele.scrollWidth == 0){
+                let lastLeft = ele.scrollLeft;
+                function move_left(){
+                    ele.scrollLeft++;
+                    if(lastLeft == ele.scrollLeft){
+                        setTimeout(function(){
+                            ele.scrollLeft = 0;
+                            setTimeout(scroll,2000);
+                        },1000);
+                    }else{
+                        lastLeft = ele.scrollLeft;
+                        setTimeout(move_left,20)
+                    };
+                };
+                move_left();
+            }else{
+                setTimeout(scroll,2000)
+            };
+        };
+    };
+
+    new Promise(() => {
+        scroll();
+    });
+
+    return function(){
+        scroll_exit = "yes";
+    };
+};
+
+  </script>
+</body>
+</html>
